@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UrlShortener.Models.Azure;
+using UrlShortener.Models.Common;
 using UrlShortener.Services;
 using UrlShortener.UI.Models;
 
@@ -14,9 +15,11 @@ namespace UrlShortener.UI.Controllers
     public class HomeController : Controller
     {
         private readonly IUrlShortService _urlShortService;
-        public HomeController(IUrlShortService urlShortService)
+        private readonly IAppSettings _settings;
+        public HomeController(IUrlShortService urlShortService, IAppSettings settings)
         {
             _urlShortService = urlShortService;
+            _settings = settings;
         }
 
         public IActionResult Index()
@@ -41,7 +44,7 @@ namespace UrlShortener.UI.Controllers
                 {
                     model.Error = result.Error;
                 }
-                model.ShortUrl = $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}/{result.Data}";
+                model.ShortUrl = $"{_settings.ShortUrlDomain}/{result.Data}";
                 return View("Index", model);
             }
 

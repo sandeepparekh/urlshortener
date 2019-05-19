@@ -14,7 +14,6 @@ using UrlShortener.Repositories;
 using UrlShortener.Repositories.Azure;
 using UrlShortener.Services;
 using UrlShortener.Services.Azure;
-using UrlShortener.UI.Middleware;
 
 namespace UrlShortener.UI
 {
@@ -139,7 +138,6 @@ namespace UrlShortener.UI
             app.UseCookiePolicy();
 
             app.UseAuthentication();
-            app.UseMiddleware<RedirectMiddleware>();
 
             app.UseMvc(routes =>
             {
