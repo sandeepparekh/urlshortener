@@ -1,0 +1,53 @@
+﻿@model UrlViewModel
+@{
+    ViewData["Title"] = "Home Page";
+}
+<div class="page-header">
+    <h1>Url Shortener</h1>
+</div>
+
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Shorten a Url</h3>
+    </div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-12@(Model.Error == null ? " hidden": "")">
+                <div class="alert alert-danger" role="alert">@Model.Error</div>
+            </div>
+            <div class="col-md-12">
+                <form class="form-horizontal" asp-controller="Home" asp-action="ShortenUrl">
+                    <fieldset>
+                        <!-- Text input-->
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" asp-for="LongUrl"></label>
+                            <div class="col-md-4">
+                                <input asp-for="LongUrl" placeholder="Your Url to shorten" class="form-control input-md">
+                            </div>
+                        </div>
+
+                        <!-- Text input-->
+                        <div class="form-group@(Model.ShortUrl == null ? " hidden" : "")">
+                            <label class="col-md-4 control-label" asp-for="ShortUrl"></label>
+                            <div class="col-md-4">
+                                <div class="well"><a href="@Model.ShortUrl">@Model.ShortUrl</a></div>
+                            </div>
+                        </div>
+
+                        <!-- Button -->
+                        <div class="form-group">
+                            <label class="col-md-4 control-label"></label>
+                            <div class="col-md-4">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        </div>
+
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+

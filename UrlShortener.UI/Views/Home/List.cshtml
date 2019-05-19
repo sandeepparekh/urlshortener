@@ -1,0 +1,55 @@
+﻿@model UrlShortener.Models.Azure.UrlListResult
+
+@{
+    ViewBag.Title = "Shortened Urls";
+    Layout = "_Layout";
+}
+
+<div class="page-header">
+    <h1>Url Shortener</h1>
+</div>
+
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Shortened Urls</h3>
+    </div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-12@(Model.Error == null ? " hidden": "")">
+                <div class="alert alert-danger" role="alert">@Model.Error</div>
+            </div>
+            <div class="col-md-12">
+                <table class="table table-striped" id="urlDataTable">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Short Url</th>
+                            <th>Long Url</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (var i=0; i < Model.Urls.Count; i++)
+                {
+                        <tr>
+                            <th scope="row">@(i+1)</th>
+                            <td>@Model.Urls[i].RowKey</td>
+                            <td>@Model.Urls[i].LongUrl</td>
+                        </tr>
+                }
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#urlDataTable').DataTable();
+        });
+    </script>
+}
