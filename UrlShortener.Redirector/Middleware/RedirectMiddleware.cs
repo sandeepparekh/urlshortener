@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using UrlShortener.Models.Common;
 using UrlShortener.Services;
 
@@ -11,13 +12,16 @@ namespace UrlShortener.Redirector.Middleware
         private readonly RequestDelegate _next;
         private readonly IUrlShortService _urlShortService;
         private readonly IAppSettings _settings;
+        private readonly ILogger _logger;
         public RedirectMiddleware(RequestDelegate next
             , IUrlShortService urlShortService
-            , IAppSettings appSettings)
+            , IAppSettings appSettings,
+            ILogger<RedirectMiddleware> logger)
         {
             _next = next;
             _urlShortService = urlShortService;
             _settings = appSettings;
+            _logger = logger;
         }
 
         public async Task Invoke(HttpContext context)
@@ -25,13 +29,16 @@ namespace UrlShortener.Redirector.Middleware
             var path = context.Request.Path.ToUriComponent();
             if (path?.Length - 1 == _settings.ShortUrlCodeLength && path != "/")
             {
-                var result = await _urlShortService.GetUrl(path.Substring(1));
+                var shortUrlCode = path.Substring(1);
+                _logger.LogDebug($"Trying to redirect {path}");
+                var result = await _urlShortService.GetUrl(shortUrlCode);
                 if (result != null && result.Success)
                 {
+                    _logger.LogDebug($"Redirecting {shortUrlCode} to {result.Data.LongUrl}");
                     context.Response.Redirect(result.Data.LongUrl, true);
                     return;
                 }
-
+                _logger.LogError($"Short Url Code:{shortUrlCode}  not found.");
                 context.Response.StatusCode = (int)HttpStatusCode.NotFound;
                 return;
             }
