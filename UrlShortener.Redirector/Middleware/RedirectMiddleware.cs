@@ -42,9 +42,7 @@ namespace UrlShortener.Redirector.Middleware
                 context.Response.StatusCode = (int)HttpStatusCode.NotFound;
                 return;
             }
-            //Let the next middleware (MVC routing) handle the request
-            //In case the path was updated, the MVC routing will see the updated path
-            await _next.Invoke(context);
+            context.Response.StatusCode = (int)HttpStatusCode.NotFound;
         }
     }
 }
