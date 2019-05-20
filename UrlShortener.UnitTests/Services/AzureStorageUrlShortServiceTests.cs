@@ -13,7 +13,7 @@ namespace UrlShortener.UnitTests.Services
 {
     public class AzureStorageUrlShortServiceTests
     {
-        private IAppSettings _settings;
+        private readonly IAppSettings _settings;
         private readonly string _alphabets = "mVRrEAkqZ4dDisTbOlGvgCUI56KnXFH37xcjaLoJ0M8Nt9fYehuWzSPwBQ1yp2";
 
         public AzureStorageUrlShortServiceTests()

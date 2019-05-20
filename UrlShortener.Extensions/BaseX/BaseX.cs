@@ -20,7 +20,7 @@ namespace UrlShortener.Extensions.BaseX
                 var bitsOf24 = binaryBits.Skip(bitsTaken).Take(bitsToTake).ToList();
 
                 var sixBitsTaken = 0;
-                while (sixBitsTaken < bitsOf24.Count())
+                while (sixBitsTaken < bitsOf24.Count)
                 {
                     var chunk = bitsOf24.Skip(sixBitsTaken).Take(sixbits).ToList();
                     var chunkString = string.Join("", chunk);
