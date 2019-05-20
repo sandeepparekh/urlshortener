@@ -69,14 +69,5 @@ namespace UrlShortener.Repositories.Azure
                 Urls = result.Results
             };
         }
-
-        public async Task<bool> DeleteUrl(string shortUrlCode, string userId)
-        {
-            var redirOptEnt = await GetRedirectOptimizedUrl(shortUrlCode.Substring(0, 3), shortUrlCode);
-            var readOptEnt = await GetReadOptimizedUrl(userId, shortUrlCode);
-            await _urlRedirectTable.ExecuteAsync(TableOperation.Delete(redirOptEnt));
-            await _urlReadTable.ExecuteAsync(TableOperation.Delete(readOptEnt));
-            return true;
-        }
     }
 }

@@ -17,7 +17,5 @@ namespace UrlShortener.Repositories
         Task<Url> GetReadOptimizedUrl(string partitionKey, string rowKey);
 
         Task<UrlListResult> GetUrls(string userId, TableContinuationToken token = null);
-
-        Task<bool> DeleteUrl(string shortUrlCode, string userId);
     }
 }

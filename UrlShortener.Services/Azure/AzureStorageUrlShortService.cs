@@ -17,8 +17,8 @@ namespace UrlShortener.Services.Azure
         private readonly char[] _alphabets;
         private readonly IUrlRepository _urlRepository;
         private readonly ICacheService _cacheService;
-
         private readonly ILogger _logger;
+        private readonly int _shortUrlCodeLength;
 
         public AzureStorageUrlShortService(IAppSettings settings,
             IUrlRepository urlRepository,
@@ -30,12 +30,51 @@ namespace UrlShortener.Services.Azure
             _urlRepository = urlRepository;
             _cacheService = cacheService;
             _logger = logger;
+            _shortUrlCodeLength = _settings.ShortUrlCodeLength;
+        }
+
+        private async Task<Result<string>> ProcessForDuplicateShortUrlCode(string base62, string shortUrlCode, string longUrl, string userId)
+        {
+            var bitstaken = _shortUrlCodeLength;
+            _logger.LogWarning(LoggingEvents.CreateShortUrlCode, $"{shortUrlCode} has already been used. Trying another..");
+            while (true)
+            {
+                shortUrlCode = string.Join("", base62.Skip(bitstaken).Take(_settings.ShortUrlCodeLength));
+                if (shortUrlCode.Length < _shortUrlCodeLength || shortUrlCode.Contains('='))
+                {
+                    _logger.LogError(LoggingEvents.CreateShortUrlCode, $"All possible option from base62 string for a short url code have been exhausted.");
+                    return new Result<string>
+                    {
+                        Success = false,
+                        Error = "Unable to generate a short URL code"
+                    };
+                }
+                var pk = shortUrlCode.Substring(0, 3);
+                bitstaken += _shortUrlCodeLength;
+                var existingRedirectEntity = await _urlRepository.GetRedirectOptimizedUrl(pk, shortUrlCode);
+                if (existingRedirectEntity != null)
+                {
+                    _logger.LogWarning(LoggingEvents.CreateShortUrlCode, $"{shortUrlCode} has already been used. Trying another..");
+                    continue; // another duplication
+                }
+
+                var redirOptimizedEnt = new Url(pk, shortUrlCode, longUrl);
+                var readOptimizedEnt = new Url(userId, shortUrlCode, longUrl);
+
+                await _urlRepository.CreateUrl(redirOptimizedEnt, readOptimizedEnt);
+                _logger.LogDebug(LoggingEvents.CreateShortUrlCode, $"{shortUrlCode} has been Generated for {longUrl}");
+
+                return new Result<string>
+                {
+                    Success = true,
+                    Data = shortUrlCode
+                };
+            }
         }
 
         public async Task<Result<string>> CreateUrl(string longUrl, string userId = "anon")
         {
             _logger.LogDebug(LoggingEvents.CreateShortUrlCode, $"Generating Short Url Code for {longUrl}");
-            var bitstaken = _settings.ShortUrlCodeLength;
             try
             {
                 var urlToHash = longUrl;
@@ -46,7 +85,7 @@ namespace UrlShortener.Services.Azure
                 }
 
                 var base62 = urlToHash.GetMd5Hash().ToBaseX(_alphabets);
-                var shortUrlCode = base62.Substring(0, _settings.ShortUrlCodeLength);
+                var shortUrlCode = base62.Substring(0, _shortUrlCodeLength);
                 var pk = shortUrlCode.Substring(0, 3);
 
                 var redirOptimizedEnt = new Url(pk, shortUrlCode, longUrl);
@@ -70,41 +109,8 @@ namespace UrlShortener.Services.Azure
                     _logger.LogDebug(LoggingEvents.CreateShortUrlCode, $"There is already an entry for {shortUrlCode}-{longUrl}. Returning same Url Short Code.");
                     return result;
                 }
-
-                _logger.LogWarning(LoggingEvents.CreateShortUrlCode, $"{shortUrlCode} has already been used. Trying another..");
-                while (true)
-                {
-                    shortUrlCode = string.Join("", base62.Skip(bitstaken).Take(_settings.ShortUrlCodeLength));
-                    if (shortUrlCode.Length < _settings.ShortUrlCodeLength || shortUrlCode.Contains('='))
-                    {
-                        _logger.LogError(LoggingEvents.CreateShortUrlCode, $"All possible option from base62 string for a short url code have been exhausted.");
-                        return new Result<string>
-                        {
-                            Success = false,
-                            Error = "Unable to generate a short URL code"
-                        };
-                    }
-                    pk = shortUrlCode.Substring(0, 3);
-                    bitstaken += _settings.ShortUrlCodeLength;
-                    existingRedirectEntity = await _urlRepository.GetRedirectOptimizedUrl(pk, shortUrlCode);
-                    if (existingRedirectEntity != null)
-                    {
-                        _logger.LogWarning(LoggingEvents.CreateShortUrlCode, $"{shortUrlCode} has already been used. Trying another..");
-                        continue; // another duplication
-                    }
-
-                    redirOptimizedEnt.PartitionKey = pk;
-                    redirOptimizedEnt.RowKey = shortUrlCode;
-                    readOptimizedEnt.RowKey = shortUrlCode;
-                    await _urlRepository.CreateUrl(redirOptimizedEnt, readOptimizedEnt);
-                    _logger.LogDebug(LoggingEvents.CreateShortUrlCode, $"{shortUrlCode} has been Generated for {longUrl}");
-
-                    return new Result<string>
-                    {
-                        Success = true,
-                        Data = shortUrlCode
-                    };
-                }
+                // duplicate short url code
+                return await ProcessForDuplicateShortUrlCode(base62, shortUrlCode, longUrl, userId);
             }
             catch (Exception ex)
             {
@@ -128,7 +134,7 @@ namespace UrlShortener.Services.Azure
                     Data = cachedValue
                 };
 
-                if (shortUrlCode.Length != _settings.ShortUrlCodeLength) return null;
+                if (shortUrlCode.Length != _shortUrlCodeLength) return null;
                 var url = await _urlRepository.GetRedirectOptimizedUrl(shortUrlCode.Substring(0, 3), shortUrlCode);
                 _cacheService.SetCache(shortUrlCode, url.LongUrl);
                 return new Result<string>
@@ -158,28 +164,6 @@ namespace UrlShortener.Services.Azure
             {
                 _logger.LogError(LoggingEvents.GetUrls, ex, ex.Message);
                 return new UrlListResult
-                {
-                    Success = false,
-                    Error = ex.Message
-                };
-            }
-        }
-
-        public async Task<Result<bool>> DeleteUrl(string shortUrlCode, string userId)
-        {
-            try
-            {
-                var result = await _urlRepository.DeleteUrl(shortUrlCode, userId);
-                return new Result<bool>
-                {
-                    Success = true,
-                    Data = result
-                };
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(LoggingEvents.DeleteUrl, ex, ex.Message);
-                return new Result<bool>
                 {
                     Success = false,
                     Error = ex.Message

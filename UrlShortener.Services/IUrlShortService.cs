@@ -11,7 +11,5 @@ namespace UrlShortener.Services
         Task<Result<string>> GetLongUrl(string shortUrlCode);
 
         Task<UrlListResult> GetUrls(string userId, TableContinuationToken token = null);
-
-        Task<Result<bool>> DeleteUrl(string shortUrlCode, string userId);
     }
 }
