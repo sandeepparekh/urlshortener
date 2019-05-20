@@ -78,3 +78,4 @@ PS: Nani means short in a local lanaguage from where I come.
 * Use custom domains
 * Infrastructure as code
 * Use CosmosDb for high avaibility and lower latency if cost is not an issue.
+* Do proper paging with Azure Storage

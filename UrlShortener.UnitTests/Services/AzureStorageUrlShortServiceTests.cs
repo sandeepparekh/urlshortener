@@ -23,6 +23,7 @@ namespace UrlShortener.UnitTests.Services
             mockSettings.Setup(s => s.ShortUrlCodeLength).Returns(6);
             _settings = mockSettings.Object;
         }
+
         [Theory]
         [InlineData("https://localhost/dfedb3af-16c7-4aca-b7e8-3c932a0dbf1f", "TvZzsr", "anon")]
         [InlineData("https://localhost/02205dd4-1c99-4f61-9f39-f53617482f31", "svxLiU", "john")]
@@ -111,5 +112,31 @@ namespace UrlShortener.UnitTests.Services
             Assert.Equal(exMsg, result?.Error);
         }
 
+        [Fact]
+        public async void GetLongUrl_CacheNoneCacheTest()
+        {
+            var mockRepo = new Mock<IUrlRepository>();
+            var mockLogger = new Mock<ILogger<AzureStorageUrlShortService>>();
+            var mockCache = new Mock<ICacheService>();
+            var service = new AzureStorageUrlShortService(_settings, mockRepo.Object, mockCache.Object, mockLogger.Object);
+
+            var shortUrlCode = "aBcDeF";
+            var pk = "aBc";
+            var longUrl = "https://example.com";
+
+            mockCache.SetupSequence(c => c.GetCache(shortUrlCode))
+                .Returns(longUrl)
+                .Returns(string.Empty);
+            
+            // get value from cache
+            Assert.Equal(longUrl, service.GetLongUrl(shortUrlCode).Result.Data);
+
+            // check if cache set and repo called
+            mockRepo.Setup(r => r.GetRedirectOptimizedUrl(pk, shortUrlCode))
+                .Returns(Task.FromResult(new Url(pk, shortUrlCode, longUrl)));
+            await service.GetLongUrl(shortUrlCode);
+            mockRepo.Verify(v => v.GetRedirectOptimizedUrl(pk, shortUrlCode), Times.Once);
+            mockCache.Verify(c => c.SetCache(shortUrlCode, longUrl), Times.Once);
+        }
     }
 }
