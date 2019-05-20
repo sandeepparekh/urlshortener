@@ -14,7 +14,5 @@ namespace UrlShortener.Redirector
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
                 .UseApplicationInsights();
-
-
     }
 }

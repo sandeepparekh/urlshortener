@@ -12,7 +12,6 @@ namespace UrlShortener.UnitTests.Extensions
         [InlineData("base64", "YmFzZTY0")]
         [InlineData("The quick brown fox jumps over the lazy dog. 1234567890", "VGhlIHF1aWNrIGJyb3duIGZveCBqdW1wcyBvdmVyIHRoZSBsYXp5IGRvZy4gMTIzNDU2Nzg5MA==")]
         [InlineData("dd23d036063c1362ad9563db1834eb94", "ZGQyM2QwMzYwNjNjMTM2MmFkOTU2M2RiMTgzNGViOTQ=")]
-
         public void Base64Tests(string input, string output)
         {
             Assert.Equal(output, input.ToBaseX(AlphabetSet));

@@ -1,11 +1,12 @@
-﻿using System;
-using StackExchange.Redis;
+﻿using StackExchange.Redis;
+using System;
 
 namespace UrlShortener.Services.Redis
 {
     public class RedisCacheService : ICacheService
     {
         private readonly IDatabase _cache;
+
         public RedisCacheService(string cacheConnString)
         {
             _cache = new Lazy<ConnectionMultiplexer>(ConnectionMultiplexer.Connect(cacheConnString)).Value.GetDatabase();

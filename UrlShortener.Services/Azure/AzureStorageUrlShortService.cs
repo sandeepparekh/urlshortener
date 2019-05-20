@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.WindowsAzure.Storage.Table;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Microsoft.WindowsAzure.Storage.Table;
 using UrlShortener.Extensions.BaseX;
 using UrlShortener.Extensions.Md5;
 using UrlShortener.Models.Azure;
@@ -19,6 +19,7 @@ namespace UrlShortener.Services.Azure
         private readonly ICacheService _cacheService;
 
         private readonly ILogger _logger;
+
         public AzureStorageUrlShortService(IAppSettings settings,
             IUrlRepository urlRepository,
             ICacheService cacheService,
@@ -30,7 +31,6 @@ namespace UrlShortener.Services.Azure
             _cacheService = cacheService;
             _logger = logger;
         }
-
 
         public async Task<Result<string>> CreateUrl(string longUrl, string userId = "anon")
         {
@@ -146,7 +146,6 @@ namespace UrlShortener.Services.Azure
                     Error = ex.Message
                 };
             }
-
         }
 
         public async Task<UrlListResult> GetUrls(string userId, TableContinuationToken token = null)

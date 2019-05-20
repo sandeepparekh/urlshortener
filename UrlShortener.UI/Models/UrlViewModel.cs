@@ -11,6 +11,7 @@ namespace UrlShortener.UI.Models
 
         [DisplayName("Short Url")]
         public string ShortUrl { get; set; }
+
         public string UserId { get; set; }
         public string Error { get; set; }
     }

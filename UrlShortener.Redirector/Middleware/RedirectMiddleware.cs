@@ -1,7 +1,7 @@
-﻿using System.Net;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using System.Net;
+using System.Threading.Tasks;
 using UrlShortener.Models.Common;
 using UrlShortener.Services;
 
@@ -13,6 +13,7 @@ namespace UrlShortener.Redirector.Middleware
         private readonly IUrlShortService _urlShortService;
         private readonly IAppSettings _settings;
         private readonly ILogger _logger;
+
         public RedirectMiddleware(RequestDelegate next
             , IUrlShortService urlShortService
             , IAppSettings appSettings,

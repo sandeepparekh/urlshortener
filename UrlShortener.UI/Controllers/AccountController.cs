@@ -1,8 +1,8 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace UrlShortener.UI.Controllers
 {
@@ -19,7 +19,7 @@ namespace UrlShortener.UI.Controllers
             await HttpContext.SignOutAsync("Auth0", new AuthenticationProperties
             {
                 // Indicate here where Auth0 should redirect the user after a logout.
-                // Note that the resulting absolute Uri must be whitelisted in the 
+                // Note that the resulting absolute Uri must be whitelisted in the
                 // **Allowed Logout URLs** settings for the client.
                 RedirectUri = Url.Action("Index", "Home")
             });

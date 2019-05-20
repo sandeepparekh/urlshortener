@@ -35,7 +35,6 @@ namespace UrlShortener.Extensions.BaseX
                     sixBitsTaken += sixbits;
                 }
 
-
                 bitsTaken += bitsToTake;
             }
 

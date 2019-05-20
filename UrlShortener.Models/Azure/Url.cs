@@ -4,7 +4,9 @@ namespace UrlShortener.Models.Azure
 {
     public class Url : TableEntity
     {
-        public Url() { }
+        public Url()
+        {
+        }
 
         public Url(string partitionKey, string rowKey, string longUrl)
         {
@@ -12,6 +14,7 @@ namespace UrlShortener.Models.Azure
             RowKey = rowKey;
             LongUrl = longUrl;
         }
+
         public string LongUrl { get; set; }
     }
 }

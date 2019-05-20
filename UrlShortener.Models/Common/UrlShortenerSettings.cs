@@ -8,6 +8,7 @@
         string ShortUrlDomain { get; set; }
         string CacheConnectionString { get; set; }
     }
+
     public class UrlShortenerSettings : IAppSettings
     {
         public string DbConnectionString { get; set; }

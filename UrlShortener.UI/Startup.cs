@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -9,6 +6,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 using UrlShortener.Models.Common;
 using UrlShortener.Repositories;
 using UrlShortener.Repositories.Azure;
@@ -31,6 +31,7 @@ namespace UrlShortener.UI
             var configuration = builder.Build();
             configuration.GetSection("AppSettings").Bind(AppSettings);
         }
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -48,12 +49,11 @@ namespace UrlShortener.UI
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-
             ConfigureAuth0Authentication(services);
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddSingleton(AppSettings);
-            services.AddTransient<ICacheService>(r =>new  RedisCacheService(AppSettings.CacheConnectionString));
+            services.AddTransient<ICacheService>(r => new RedisCacheService(AppSettings.CacheConnectionString));
             services.AddTransient<IUrlRepository>(r => new AzureStorageUrlRepository(AppSettings.DbConnectionString));
             services.AddTransient<IUrlShortService, AzureStorageUrlShortService>();
         }
@@ -96,7 +96,7 @@ namespace UrlShortener.UI
 
                 options.Events = new OpenIdConnectEvents
                 {
-                    // handle the logout redirection 
+                    // handle the logout redirection
                     OnRedirectToIdentityProviderForSignOut = (context) =>
                     {
                         var logoutUri = $"https://{Configuration["Auth0:Domain"]}/v2/logout?client_id={Configuration["Auth0:ClientId"]}";
@@ -120,8 +120,8 @@ namespace UrlShortener.UI
                     }
                 };
             });
-
         }
+
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {

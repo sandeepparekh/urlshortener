@@ -1,7 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Moq;
+using System;
+using System.Threading.Tasks;
 using UrlShortener.Models.Azure;
 using UrlShortener.Models.Common;
 using UrlShortener.Repositories;
@@ -11,11 +11,11 @@ using Xunit;
 
 namespace UrlShortener.UnitTests.Services
 {
-
     public class AzureStorageUrlShortServiceTests
     {
         private IAppSettings _settings;
         private readonly string _alphabets = "mVRrEAkqZ4dDisTbOlGvgCUI56KnXFH37xcjaLoJ0M8Nt9fYehuWzSPwBQ1yp2";
+
         public AzureStorageUrlShortServiceTests()
         {
             var mockSettings = new Mock<IAppSettings>();
@@ -127,7 +127,7 @@ namespace UrlShortener.UnitTests.Services
             mockCache.SetupSequence(c => c.GetCache(shortUrlCode))
                 .Returns(longUrl)
                 .Returns(string.Empty);
-            
+
             // get value from cache
             Assert.Equal(longUrl, service.GetLongUrl(shortUrlCode).Result.Data);
 

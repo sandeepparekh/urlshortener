@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using UrlShortener.Models.Azure;
 using UrlShortener.Models.Common;
 using UrlShortener.Services;
@@ -16,6 +16,7 @@ namespace UrlShortener.UI.Controllers
     {
         private readonly IUrlShortService _urlShortService;
         private readonly IAppSettings _settings;
+
         public HomeController(IUrlShortService urlShortService, IAppSettings settings)
         {
             _urlShortService = urlShortService;

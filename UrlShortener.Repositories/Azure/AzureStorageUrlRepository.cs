@@ -1,6 +1,6 @@
-﻿using System.Threading.Tasks;
-using Microsoft.WindowsAzure.Storage;
+﻿using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
+using System.Threading.Tasks;
 using UrlShortener.Models.Azure;
 
 namespace UrlShortener.Repositories.Azure
@@ -11,13 +11,13 @@ namespace UrlShortener.Repositories.Azure
         private readonly CloudTable _urlReadTable;
         private static readonly string UrlRedirectTableName = "UrlRedirect";
         private static readonly string UrlReadTableName = "UrlRead";
+
         public AzureStorageUrlRepository(string storageConnString)
         {
             var cloudStorageAccount = CloudStorageAccount.Parse(storageConnString);
             var cloudTableClient = cloudStorageAccount.CreateCloudTableClient();
             _urlRedirectTable = cloudTableClient.GetTableReference(UrlRedirectTableName);
             _urlReadTable = cloudTableClient.GetTableReference(UrlReadTableName);
-
         }
 
         public async Task<bool> CreateUrl(Url redirectOptimizedEntity, Url readOptimizedEntity)
