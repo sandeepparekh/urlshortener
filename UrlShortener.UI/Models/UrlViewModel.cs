@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using UrlShortener.Models.Azure;
 
 namespace UrlShortener.UI.Models
 {

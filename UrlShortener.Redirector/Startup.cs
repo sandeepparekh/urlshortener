@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -14,6 +10,7 @@ using UrlShortener.Repositories;
 using UrlShortener.Repositories.Azure;
 using UrlShortener.Services;
 using UrlShortener.Services.Azure;
+using UrlShortener.Services.Redis;
 
 namespace UrlShortener.Redirector
 {
@@ -35,6 +32,7 @@ namespace UrlShortener.Redirector
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton(AppSettings);
+            services.AddTransient<ICacheService>(r => new RedisCacheService(AppSettings.CacheConnectionString));
             services.AddTransient<IUrlRepository>(r => new AzureStorageUrlRepository(AppSettings.DbConnectionString));
             services.AddTransient<IUrlShortService, AzureStorageUrlShortService>();
         }

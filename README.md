@@ -29,6 +29,9 @@ Data in this table is consumed by URL shortening user interface. `UserId` is use
 ### UrlRedirect
 Date in this table is consumed by URL redirect module. First three characters of Shor Url Code are used as `PartitionKey` and 6 character `Short Url Code` is used as `RowKey`. This optimized the retrieval of Long url from short code while doing redirect.
 
+## Caching
+Url short code and long URL are stored as a Key/Value pair in Azure Cache for Redis for 7 days before they expire.
+
 # Project Structure
 ## UrlShortener.Extensions
 This project contains extensions methods for Base conversion and Md5 hash.
@@ -63,7 +66,7 @@ Redirector- https://nanirulredir.azurewebsites.net/sW6c5P
 PS: Nani means short in a local lanaguage from where I come.
 
 # Future
-* Implement Cache
 * API Access to developers
 * Protection against abuse
 * Use custom domains
+* Infrastructure as code

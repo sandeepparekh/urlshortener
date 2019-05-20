@@ -31,11 +31,11 @@ namespace UrlShortener.Redirector.Middleware
             {
                 var shortUrlCode = path.Substring(1);
                 _logger.LogDebug($"Trying to redirect {path}");
-                var result = await _urlShortService.GetUrl(shortUrlCode);
+                var result = await _urlShortService.GetLongUrl(shortUrlCode);
                 if (result != null && result.Success)
                 {
-                    _logger.LogDebug($"Redirecting {shortUrlCode} to {result.Data.LongUrl}");
-                    context.Response.Redirect(result.Data.LongUrl, true);
+                    _logger.LogDebug($"Redirecting {shortUrlCode} to {result.Data}");
+                    context.Response.Redirect(result.Data, true);
                     return;
                 }
                 _logger.LogError($"Short Url Code:{shortUrlCode}  not found.");

@@ -16,14 +16,18 @@ namespace UrlShortener.Services.Azure
         private readonly IAppSettings _settings;
         private readonly char[] _alphabets;
         private readonly IUrlRepository _urlRepository;
+        private readonly ICacheService _cacheService;
+
         private readonly ILogger _logger;
         public AzureStorageUrlShortService(IAppSettings settings,
             IUrlRepository urlRepository,
+            ICacheService cacheService,
             ILogger<AzureStorageUrlShortService> logger)
         {
             _settings = settings;
             _alphabets = _settings.EncodingAlphabet.Select(c => c).ToArray();
             _urlRepository = urlRepository;
+            _cacheService = cacheService;
             _logger = logger;
         }
 
@@ -113,22 +117,30 @@ namespace UrlShortener.Services.Azure
             }
         }
 
-        public async Task<Result<Url>> GetUrl(string shortUrlCode)
+        public async Task<Result<string>> GetLongUrl(string shortUrlCode)
         {
             try
             {
-                if (shortUrlCode.Length != _settings.ShortUrlCodeLength) return null;
-                var url = await _urlRepository.GetRedirectOptimizedUrl(shortUrlCode.Substring(0, 3), shortUrlCode);
-                return new Result<Url>
+                var cachedValue = _cacheService.GetCache(shortUrlCode);
+                if (!string.IsNullOrEmpty(cachedValue)) return new Result<string>
                 {
                     Success = true,
-                    Data = url
+                    Data = cachedValue
+                };
+
+                if (shortUrlCode.Length != _settings.ShortUrlCodeLength) return null;
+                var url = await _urlRepository.GetRedirectOptimizedUrl(shortUrlCode.Substring(0, 3), shortUrlCode);
+                _cacheService.SetCache(shortUrlCode, url.LongUrl);
+                return new Result<string>
+                {
+                    Success = true,
+                    Data = url.LongUrl
                 };
             }
             catch (Exception ex)
             {
                 _logger.LogError(LoggingEvents.GetUrl, ex, ex.Message);
-                return new Result<Url>
+                return new Result<string>
                 {
                     Success = false,
                     Error = ex.Message
