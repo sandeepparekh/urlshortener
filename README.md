@@ -69,7 +69,7 @@ Has all the unit tests for business logic.
 
 # Live Version
 UI - https://naniurl.azurewebsites.net
-Redirector- https://nanirulredir.azurewebsites.net/sW6c5P
+Redirector- https://nanirulredir.azurewebsites.net/
 
 PS: Nani means short in a local lanaguage from where I come.
 
