@@ -35,6 +35,10 @@ Both UI and redirector scale out if Average CPU% goes over 70%. Max scale count 
 ## Caching
 Url short code and long URL are stored as a Key/Value pair in Azure Cache for Redis for 7 days before they expire.
 
+## Data Replication
+Azure storage account is Read-Access-Geo-Redundant Storage(RA-GRS) which provides geo-redundant storage with additional benefits of read accesss to the secondary endpoint.  If an outage occurs in the primary endpoint, applications configured for RA-GRS and designed for high availability can continue to read from the secondary endpoint.
+
+
 # Project Structure
 ## UrlShortener.Extensions
 This project contains extensions methods for Base conversion and Md5 hash.
@@ -73,3 +77,4 @@ PS: Nani means short in a local lanaguage from where I come.
 * Protection against abuse
 * Use custom domains
 * Infrastructure as code
+* Use CosmosDb for high avaibility and lower latency if cost is not an issue.
