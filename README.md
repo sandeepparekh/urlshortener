@@ -1,7 +1,7 @@
 # Introduction
 This is your basic Url Shortening service similar to `bit.ly`. It can take long Url and convert to a short alias. Also, inflate short URL back to it's original form.
 
-# How it work
+# How it works
 ## Short code generation
 1. Compute MD5 hash of the given long Url
 2. Convert MD5 to a base62 encoding ( a-z,A-Z,0-9)
