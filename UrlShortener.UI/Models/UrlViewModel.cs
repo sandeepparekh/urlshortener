@@ -6,10 +6,10 @@ namespace UrlShortener.UI.Models
     public class UrlViewModel
     {
         [Required]
-        [DisplayName("Url To Shorten")]
+        [DisplayName("Shorten your link")]
         public string LongUrl { get; set; }
 
-        [DisplayName("Short Url")]
+        [DisplayName("Shortened Url")]
         public string ShortUrl { get; set; }
 
         public string UserId { get; set; }
