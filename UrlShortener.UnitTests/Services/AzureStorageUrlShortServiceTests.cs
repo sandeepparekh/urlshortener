@@ -138,5 +138,38 @@ namespace UrlShortener.UnitTests.Services
             mockRepo.Verify(v => v.GetRedirectOptimizedUrl(pk, shortUrlCode), Times.Once);
             mockCache.Verify(c => c.SetCache(shortUrlCode, longUrl), Times.Once);
         }
+
+        [Fact]
+        public void GetLongUrl_CacheThrowException()
+        {
+            var mockRepo = new Mock<IUrlRepository>();
+            var mockLogger = new Mock<ILogger<AzureStorageUrlShortService>>();
+            var mockCache = new Mock<ICacheService>();
+            var service = new AzureStorageUrlShortService(_settings, mockRepo.Object, mockCache.Object, mockLogger.Object);
+
+            var shortUrlCode = "aBcDeF";
+            string cacheEx = "Cache Exception";
+
+            mockCache.Setup(c => c.GetCache(shortUrlCode))
+                .Throws(new Exception(cacheEx));
+            Assert.Equal(cacheEx, service.GetLongUrl(shortUrlCode).Result.Error);
+        }
+
+        [Fact]
+        public void GetLongUrl_RepoThrowException()
+        {
+            var mockRepo = new Mock<IUrlRepository>();
+            var mockLogger = new Mock<ILogger<AzureStorageUrlShortService>>();
+            var mockCache = new Mock<ICacheService>();
+            var service = new AzureStorageUrlShortService(_settings, mockRepo.Object, mockCache.Object, mockLogger.Object);
+
+            var shortUrlCode = "aBcDeF";
+            var pk = "aBc";
+
+            string repoEx = "Repo Exception";
+            mockRepo.Setup(r => r.GetRedirectOptimizedUrl(pk, shortUrlCode))
+                .Throws(new Exception(repoEx));
+            Assert.Equal(repoEx, service.GetLongUrl(shortUrlCode).Result.Error);
+        }
     }
 }
