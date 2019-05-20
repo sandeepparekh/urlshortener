@@ -1,0 +1,30 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "redisCacheName": {
+            "value": "naniurlcache"
+        },
+        "storageAccountName": {
+            "value": "naniurlstrg"
+        },
+        "redirComponentServerFarm": {
+            "value": "naniurlredir-asp"
+        },
+        "uiComponentServerFarm": {
+            "value": "naniurl-asp"
+        },
+        "uiComponentWebApp": {
+            "value": "naniurl"
+        },
+        "redirComponentWebApp": {
+            "value": "naniurlredir"
+        },
+        "redirComponentAi": {
+            "value": "naniurlredir-ai"
+        },
+        "uiComponentAi": {
+            "value": "naniurl-ai"
+        }
+    }
+}
