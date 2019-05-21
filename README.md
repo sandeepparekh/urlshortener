@@ -65,7 +65,7 @@ Has all the unit tests for business logic.
 1. Checkout the repo locally
 2. Open `UrlShortener.sln` in Visual Studio
 3. Set `UrlShortener.Redirector` and `UrlShortener.UI` as startup projects. You can do this by going into properties of the solutions and select those two projects as startup projects.
-4. Update `ShortUrlDomain` in appsettings.json of `UrlShortener.Redirector` and `UrlShortener.UI` with local host and port if required.
+4. Update `ShortUrlDomain` and `UiDomain` in appsettings.json of `UrlShortener.Redirector` and `UrlShortener.UI` with local host and port if required.
 
 # Live Version
 UI - https://naniurl.azurewebsites.net
