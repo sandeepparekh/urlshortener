@@ -43,7 +43,7 @@ namespace UrlShortener.Redirector.Middleware
                 context.Response.StatusCode = (int)HttpStatusCode.NotFound;
                 return;
             }
-            context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+            context.Response.Redirect(_settings.UiDomain);
         }
     }
 }

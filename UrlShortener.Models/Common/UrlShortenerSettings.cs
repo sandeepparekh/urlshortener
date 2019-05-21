@@ -6,6 +6,7 @@
         string EncodingAlphabet { get; set; }
         int ShortUrlCodeLength { get; set; }
         string ShortUrlDomain { get; set; }
+        string UiDomain { get; set; }
         string CacheConnectionString { get; set; }
     }
 
@@ -15,6 +16,7 @@
         public string EncodingAlphabet { get; set; }
         public int ShortUrlCodeLength { get; set; }
         public string ShortUrlDomain { get; set; }
+        public string UiDomain { get; set; }
         public string CacheConnectionString { get; set; }
     }
 }
