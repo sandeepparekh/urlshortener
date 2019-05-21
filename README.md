@@ -69,14 +69,13 @@ Has all the unit tests for business logic.
 
 # Live Version
 UI - https://naniurl.azurewebsites.net
-Redirector- https://nanirulredir.azurewebsites.net/
+Redirector- http://naniurl.club
 
 PS: Nani means short in a local lanaguage from where I come.
 
 # Future
 * API Access to developers
 * Protection against abuse
-* Use custom domains
 * Infrastructure as code
 * Use CosmosDb for high avaibility and lower latency if cost is not an issue.
 * Do proper paging with Azure Storage
