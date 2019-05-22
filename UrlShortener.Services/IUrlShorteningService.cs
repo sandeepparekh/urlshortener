@@ -4,7 +4,7 @@ using UrlShortener.Models.Azure;
 
 namespace UrlShortener.Services
 {
-    public interface IUrlShortService
+    public interface IUrlShorteningService
     {
         Task<Result<string>> CreateUrl(string longUrl, string userId = "anon");
 

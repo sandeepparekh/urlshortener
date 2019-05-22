@@ -54,8 +54,8 @@ namespace UrlShortener.UI
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddSingleton(AppSettings);
             services.AddTransient<ICacheService>(r => new RedisCacheService(AppSettings.CacheConnectionString));
-            services.AddTransient<IUrlRepository>(r => new AzureStorageUrlRepository(AppSettings.DbConnectionString));
-            services.AddTransient<IUrlShortService, AzureStorageUrlShortService>();
+            services.AddTransient<IUrlRepository>(r => new UrlRepository(AppSettings.DbConnectionString));
+            services.AddTransient<IUrlShorteningService, UrlShorteningService>();
         }
 
         public void ConfigureAuth0Authentication(IServiceCollection services)

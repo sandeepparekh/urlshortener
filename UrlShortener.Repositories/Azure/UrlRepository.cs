@@ -5,14 +5,14 @@ using UrlShortener.Models.Azure;
 
 namespace UrlShortener.Repositories.Azure
 {
-    public class AzureStorageUrlRepository : IUrlRepository
+    public class UrlRepository : IUrlRepository
     {
         private readonly CloudTable _urlRedirectTable;
         private readonly CloudTable _urlReadTable;
         private static readonly string UrlRedirectTableName = "UrlRedirect";
         private static readonly string UrlReadTableName = "UrlRead";
 
-        public AzureStorageUrlRepository(string storageConnString)
+        public UrlRepository(string storageConnString)
         {
             var cloudStorageAccount = CloudStorageAccount.Parse(storageConnString);
             var cloudTableClient = cloudStorageAccount.CreateCloudTableClient();

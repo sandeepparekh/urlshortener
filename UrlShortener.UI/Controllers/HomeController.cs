@@ -14,10 +14,10 @@ namespace UrlShortener.UI.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IUrlShortService _urlShortService;
+        private readonly IUrlShorteningService _urlShortService;
         private readonly IAppSettings _settings;
 
-        public HomeController(IUrlShortService urlShortService, IAppSettings settings)
+        public HomeController(IUrlShorteningService urlShortService, IAppSettings settings)
         {
             _urlShortService = urlShortService;
             _settings = settings;

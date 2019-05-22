@@ -31,13 +31,13 @@ namespace UrlShortener.UnitTests.Services
         public async void CreateUrlTest_WhenEntryDoesNotExists(string longUrl, string shortUrlCode, string userId)
         {
             var mockRepo = new Mock<IUrlRepository>();
-            var mockLogger = new Mock<ILogger<AzureStorageUrlShortService>>();
+            var mockLogger = new Mock<ILogger<UrlShorteningService>>();
             mockRepo.Setup(r => r.GetRedirectOptimizedUrl(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(Task.FromResult<Url>(null));
             mockRepo.Setup(r => r.CreateUrl(It.IsAny<Url>(), It.IsAny<Url>()))
                 .Returns(Task.FromResult(true));
 
-            var service = new AzureStorageUrlShortService(_settings, mockRepo.Object, new Mock<ICacheService>().Object, mockLogger.Object);
+            var service = new UrlShorteningService(_settings, mockRepo.Object, new Mock<ICacheService>().Object, mockLogger.Object);
             var result = await service.CreateUrl(longUrl, userId);
             Assert.Equal(shortUrlCode, result?.Data);
         }
@@ -49,11 +49,11 @@ namespace UrlShortener.UnitTests.Services
         public async void CreateUrlTest_WhenEntryAlreadyExistsForSameLongUrl(string longUrl, string shortUrlCode, string userId)
         {
             var mockRepo = new Mock<IUrlRepository>();
-            var mockLogger = new Mock<ILogger<AzureStorageUrlShortService>>();
+            var mockLogger = new Mock<ILogger<UrlShorteningService>>();
             mockRepo.Setup(r => r.GetRedirectOptimizedUrl(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(Task.FromResult(new Url("", "", longUrl)));
 
-            var service = new AzureStorageUrlShortService(_settings, mockRepo.Object, new Mock<ICacheService>().Object, mockLogger.Object);
+            var service = new UrlShorteningService(_settings, mockRepo.Object, new Mock<ICacheService>().Object, mockLogger.Object);
             var result = await service.CreateUrl(longUrl, userId);
             Assert.Equal(shortUrlCode, result?.Data);
         }
@@ -63,14 +63,14 @@ namespace UrlShortener.UnitTests.Services
         public async void CreateUrlTest_WhenEntryAlreadyExistsForAnotherLongUrl(string longUrl, string shortUrlCode, string userId)
         {
             var mockRepo = new Mock<IUrlRepository>();
-            var mockLogger = new Mock<ILogger<AzureStorageUrlShortService>>();
+            var mockLogger = new Mock<ILogger<UrlShorteningService>>();
             mockRepo.SetupSequence(r => r.GetRedirectOptimizedUrl(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(Task.FromResult(new Url("", "", Guid.NewGuid().ToString())))
                 .Returns(Task.FromResult<Url>(null));
             mockRepo.Setup(r => r.CreateUrl(It.IsAny<Url>(), It.IsAny<Url>()))
                 .Returns(Task.FromResult(true));
 
-            var service = new AzureStorageUrlShortService(_settings, mockRepo.Object, new Mock<ICacheService>().Object, mockLogger.Object);
+            var service = new UrlShorteningService(_settings, mockRepo.Object, new Mock<ICacheService>().Object, mockLogger.Object);
             var result = await service.CreateUrl(longUrl, userId);
             Assert.Equal(shortUrlCode, result?.Data);
         }
@@ -80,7 +80,7 @@ namespace UrlShortener.UnitTests.Services
         public async void CreateUrlTest_WhenEntryAlreadyExistsForAnotherLongUrl_AndAllReTriesFail(string longUrl, string errorMessage, string userId)
         {
             var mockRepo = new Mock<IUrlRepository>();
-            var mockLogger = new Mock<ILogger<AzureStorageUrlShortService>>();
+            var mockLogger = new Mock<ILogger<UrlShorteningService>>();
             mockRepo.SetupSequence(r => r.GetRedirectOptimizedUrl(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(Task.FromResult(new Url("", "", Guid.NewGuid().ToString())))
                 .Returns(Task.FromResult(new Url("", "", Guid.NewGuid().ToString())))
@@ -91,7 +91,7 @@ namespace UrlShortener.UnitTests.Services
                 .Returns(Task.FromResult(new Url("", "", Guid.NewGuid().ToString())))
                 .Returns(Task.FromResult(new Url("", "", Guid.NewGuid().ToString())));
 
-            var service = new AzureStorageUrlShortService(_settings, mockRepo.Object, new Mock<ICacheService>().Object, mockLogger.Object);
+            var service = new UrlShorteningService(_settings, mockRepo.Object, new Mock<ICacheService>().Object, mockLogger.Object);
             var result = await service.CreateUrl(longUrl, userId);
             Assert.Equal(false, result?.Success);
             Assert.Equal(errorMessage, result?.Error);
@@ -103,11 +103,11 @@ namespace UrlShortener.UnitTests.Services
         {
             string exMsg = "Test Exception";
             var mockRepo = new Mock<IUrlRepository>();
-            var mockLogger = new Mock<ILogger<AzureStorageUrlShortService>>();
+            var mockLogger = new Mock<ILogger<UrlShorteningService>>();
             mockRepo.Setup(r => r.GetRedirectOptimizedUrl(It.IsAny<string>(), It.IsAny<string>()))
                 .Throws(new Exception(exMsg));
 
-            var service = new AzureStorageUrlShortService(_settings, mockRepo.Object, new Mock<ICacheService>().Object, mockLogger.Object);
+            var service = new UrlShorteningService(_settings, mockRepo.Object, new Mock<ICacheService>().Object, mockLogger.Object);
             var result = await service.CreateUrl(longUrl, userId);
             Assert.Equal(exMsg, result?.Error);
         }
@@ -116,9 +116,9 @@ namespace UrlShortener.UnitTests.Services
         public async void GetLongUrl_CacheNoneCacheTest()
         {
             var mockRepo = new Mock<IUrlRepository>();
-            var mockLogger = new Mock<ILogger<AzureStorageUrlShortService>>();
+            var mockLogger = new Mock<ILogger<UrlShorteningService>>();
             var mockCache = new Mock<ICacheService>();
-            var service = new AzureStorageUrlShortService(_settings, mockRepo.Object, mockCache.Object, mockLogger.Object);
+            var service = new UrlShorteningService(_settings, mockRepo.Object, mockCache.Object, mockLogger.Object);
 
             var shortUrlCode = "aBcDeF";
             var pk = "aBc";
@@ -143,9 +143,9 @@ namespace UrlShortener.UnitTests.Services
         public void GetLongUrl_CacheThrowException()
         {
             var mockRepo = new Mock<IUrlRepository>();
-            var mockLogger = new Mock<ILogger<AzureStorageUrlShortService>>();
+            var mockLogger = new Mock<ILogger<UrlShorteningService>>();
             var mockCache = new Mock<ICacheService>();
-            var service = new AzureStorageUrlShortService(_settings, mockRepo.Object, mockCache.Object, mockLogger.Object);
+            var service = new UrlShorteningService(_settings, mockRepo.Object, mockCache.Object, mockLogger.Object);
 
             var shortUrlCode = "aBcDeF";
             string cacheEx = "Cache Exception";
@@ -159,9 +159,9 @@ namespace UrlShortener.UnitTests.Services
         public void GetLongUrl_RepoThrowException()
         {
             var mockRepo = new Mock<IUrlRepository>();
-            var mockLogger = new Mock<ILogger<AzureStorageUrlShortService>>();
+            var mockLogger = new Mock<ILogger<UrlShorteningService>>();
             var mockCache = new Mock<ICacheService>();
-            var service = new AzureStorageUrlShortService(_settings, mockRepo.Object, mockCache.Object, mockLogger.Object);
+            var service = new UrlShorteningService(_settings, mockRepo.Object, mockCache.Object, mockLogger.Object);
 
             var shortUrlCode = "aBcDeF";
             var pk = "aBc";

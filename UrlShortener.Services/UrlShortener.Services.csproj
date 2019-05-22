@@ -8,6 +8,7 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.1" />
     <PackageReference Include="StackExchange.Redis" Version="2.0.601" />
+    <PackageReference Include="UAParser" Version="3.1.36" />
   </ItemGroup>
 
   <ItemGroup>

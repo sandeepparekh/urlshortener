@@ -11,7 +11,7 @@ using UrlShortener.Repositories;
 
 namespace UrlShortener.Services.Azure
 {
-    public class AzureStorageUrlShortService : IUrlShortService
+    public class UrlShorteningService : IUrlShorteningService
     {
         private readonly IAppSettings _settings;
         private readonly char[] _alphabets;
@@ -20,10 +20,10 @@ namespace UrlShortener.Services.Azure
         private readonly ILogger _logger;
         private readonly int _shortUrlCodeLength;
 
-        public AzureStorageUrlShortService(IAppSettings settings,
+        public UrlShorteningService(IAppSettings settings,
             IUrlRepository urlRepository,
             ICacheService cacheService,
-            ILogger<AzureStorageUrlShortService> logger)
+            ILogger<UrlShorteningService> logger)
         {
             _settings = settings;
             _alphabets = _settings.EncodingAlphabet.Select(c => c).ToArray();
