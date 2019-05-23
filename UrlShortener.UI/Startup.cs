@@ -7,13 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.IO;
 using System.Threading.Tasks;
 using UrlShortener.Models.Common;
 using UrlShortener.Repositories;
 using UrlShortener.Repositories.Azure;
 using UrlShortener.Services;
 using UrlShortener.Services.Azure;
+using UrlShortener.Services.Memory;
 using UrlShortener.Services.Redis;
 
 namespace UrlShortener.UI
@@ -21,20 +21,12 @@ namespace UrlShortener.UI
     public class Startup
     {
         private static readonly IAppSettings AppSettings = new UrlShortenerSettings();
+        private IHostingEnvironment _environment;
 
-        static Startup()
-        {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", true, true);
-
-            var configuration = builder.Build();
-            configuration.GetSection("AppSettings").Bind(AppSettings);
-        }
-
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
             Configuration = configuration;
+            _environment = env;
         }
 
         public IConfiguration Configuration { get; }
@@ -52,8 +44,17 @@ namespace UrlShortener.UI
             ConfigureAuth0Authentication(services);
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            Configuration.GetSection("AppSettings").Bind(AppSettings);
             services.AddSingleton(AppSettings);
-            services.AddTransient<ICacheService>(r => new RedisCacheService(AppSettings.CacheConnectionString));
+            if (_environment.IsDevelopment())
+            {
+                services.AddSingleton<ICacheService, MemoryCacheService>();
+            }
+            else
+            {
+                services.AddTransient<ICacheService>(r => new RedisCacheService(AppSettings.CacheConnectionString));
+            }
             services.AddTransient<IUrlRepository>(r => new UrlRepository(AppSettings.DbConnectionString));
             services.AddTransient<IUrlShorteningService, UrlShorteningService>();
         }
