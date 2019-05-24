@@ -2,6 +2,10 @@
 using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Queue;
+using Newtonsoft.Json;
+using UrlShortener.Models.Azure;
 using UrlShortener.Models.Common;
 using UrlShortener.Services;
 
@@ -10,19 +14,25 @@ namespace UrlShortener.Redirector.Middleware
     public class RedirectMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly IUrlShortService _urlShortService;
+        private readonly IUrlShorteningService _urlShortService;
         private readonly IAppSettings _settings;
         private readonly ILogger _logger;
+        private readonly CloudQueue _urlAnalyticsQueue;
+        private readonly string UrlAnalyticsQueueName = "urlanalytics";
 
         public RedirectMiddleware(RequestDelegate next
-            , IUrlShortService urlShortService
-            , IAppSettings appSettings,
-            ILogger<RedirectMiddleware> logger)
+            , IUrlShorteningService urlShortService
+            , IAppSettings appSettings
+            , ILogger<RedirectMiddleware> logger)
         {
             _next = next;
             _urlShortService = urlShortService;
             _settings = appSettings;
             _logger = logger;
+            _urlAnalyticsQueue = CloudStorageAccount
+                .Parse(_settings.DbConnectionString)
+                ?.CreateCloudQueueClient()
+                ?.GetQueueReference(UrlAnalyticsQueueName);
         }
 
         public async Task Invoke(HttpContext context)
@@ -35,6 +45,15 @@ namespace UrlShortener.Redirector.Middleware
                 var result = await _urlShortService.GetLongUrl(shortUrlCode);
                 if (result != null && result.Success)
                 {
+                    // send message to queue for url analytics
+                    await _urlAnalyticsQueue.AddMessageAsync(new CloudQueueMessage(JsonConvert.SerializeObject(
+                        new UrlAnalyticsQueueMessage
+                        {
+                            ShortUrlCode = shortUrlCode,
+                            Referer = context.Request.Headers.ContainsKey("Referer") ? context.Request.Headers["Referer"].ToString() : "",
+                            UserAgent = context.Request.Headers.ContainsKey("user-agent") ? context.Request.Headers["user-agent"].ToString() : ""
+                        })));
+
                     _logger.LogDebug($"Redirecting {shortUrlCode} to {result.Data}");
                     context.Response.Redirect(result.Data, true);
                     return;
